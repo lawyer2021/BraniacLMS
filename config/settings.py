@@ -37,8 +37,11 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    "django_extensions",
     "markdownify.apps.MarkdownifyConfig",
     'mainapp',
+    "authapp",
+    "social_django",
 ]
 
 MIDDLEWARE = [
@@ -64,8 +67,12 @@ TEMPLATES = [
             'context_processors': [
                 'django.template.context_processors.debug',
                 'django.template.context_processors.request',
+                "django.template.context_processors.media",
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'mainapp.context_processors.example.simple_context_processor',
+                "social_django.context_processors.backends",
+                "social_django.context_processors.login_redirect",
             ],
         },
     },
@@ -102,6 +109,12 @@ AUTH_PASSWORD_VALIDATORS = [
         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
 ]
+AUTH_USER_MODEL = "authapp.CustomUser"
+
+LOGIN_REDIRECT_URL = "mainapp:index"
+LOGOUT_REDIRECT_URL = "mainapp:index"
+
+MESSAGE_STORAGE = "django.contrib.messages.storage.session.SessionStorage"
 
 
 # Internationalization
@@ -130,3 +143,20 @@ STATICFILES_DIRS = [
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# Media files
+MEDIA_URL = "/media/"
+MEDIA_ROOT = BASE_DIR / "media"
+
+AUTHENTICATION_BACKENDS = (
+    "social_core.backends.github.GithubOAuth2",
+    "social_core.backends.vk.VKOAuth2",
+    "django.contrib.auth.backends.ModelBackend",
+)
+
+SOCIAL_AUTH_GITHUB_KEY = 'Iv1.b90671d42ae83a62'
+SOCIAL_AUTH_GITHUB_SECRET = '5cfb5ea51567c9b9f9d855f42b7830f18c145bd5'
+
+SOCIAL_AUTH_VK_OAUTH2_KEY = '51503874'# ID приложения
+SOCIAL_AUTH_VK_OAUTH2_SECRET = 'tUROi1qas3g4YqwxDBCd' # Защищённый ключ
+SOCIAL_AUTH_VK_OAUTH2_API_VERSION = '5.131'
