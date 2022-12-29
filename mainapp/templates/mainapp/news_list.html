@@ -1,8 +1,5 @@
 {% extends 'base.html' %}
 {% block title %}
-{% with range as double_range %}
-
-
 Новости
 {% endblock title %}
 {% block content %}
@@ -65,14 +62,13 @@
             {% for i in double_range %}
             <li class="page-item"><a class="page-link" href="{% url 'mainapp:news_paginator' i %}">{{i}}</a></li>
             {% endfor %}
-<!--            <li class="page-item"><a class="page-link" href="#">1</a></li>-->
-<!--            <li class="page-item"><a class="page-link" href="#">2</a></li>-->
-<!--            <li class="page-item"><a class="page-link" href="#">3</a></li>-->
+            <li class="page-item"><a class="page-link" href="#">1</a></li>
+            <li class="page-item"><a class="page-link" href="#">2</a></li>
+            <li class="page-item"><a class="page-link" href="#">3</a></li>
             <li class="page-item"><a class="page-link" href="#">Next</a></li>
         </ul>
     </nav>
 </div>
-{% endwith %}
 {% endblock content %}
 
 
