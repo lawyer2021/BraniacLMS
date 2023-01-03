@@ -10,7 +10,6 @@ from django.contrib.auth.mixins import (
     PermissionRequiredMixin,
     UserPassesTestMixin,
 )
-
 from django.shortcuts import get_object_or_404
 from django.urls import reverse_lazy
 from django.contrib.auth.mixins import PermissionRequiredMixin
@@ -33,12 +32,12 @@ from mainapp import tasks as mainapp_tasks
 from django.contrib import messages
 from django.utils.translation import gettext_lazy as _
 
-
 logger = logging.getLogger(__name__)
 
 
 class LogView(TemplateView):
     template_name = "mainapp/log_view.html"
+
     def get_context_data(self, **kwargs):
         context = super(LogView, self).get_context_data(**kwargs)
         log_slice = []
@@ -50,9 +49,11 @@ class LogView(TemplateView):
             context["log"] = "".join(log_slice)
         return context
 
+
 class LogDownloadView(UserPassesTestMixin, View):
     def test_func(self):
         return self.request.user.is_superuser
+
     def get(self, *args, **kwargs):
         return FileResponse(open(settings.LOG_FILE, "rb"))
 
@@ -70,13 +71,14 @@ class ContactsView(TemplateView):
         if self.request.user.is_authenticated:
             cache_lock_flag = cache.get(f"mail_feedback_lock_{self.request.user.pk}")
             if not cache_lock_flag:
-                cache.set(f"mail_feedback_lock_{self.request.user.pk}", "lock", timeout=10,)
+                cache.set(f"mail_feedback_lock_{self.request.user.pk}", "lock", timeout=10, )
                 messages.add_message(self.request, messages.INFO, _("Message sended"))
                 mainapp_tasks.send_feedback_mail.delay({
                     "user_id": self.request.POST.get("user_id"),
-                    "message": self.request.POST.get("message"),})
+                    "message": self.request.POST.get("message"), })
             else:
-                messages.add_message(self.request, messages.WARNING, _("You can send only one message per 10 seconds"),)
+                messages.add_message(self.request, messages.WARNING,
+                                     _("You can send only one message per 10 seconds"), )
         return HttpResponseRedirect(reverse_lazy("mainapp:contacts"))
 
 
@@ -107,7 +109,10 @@ class CoursesDetailView(TemplateView):
                                                                             user=self.request.user)
         cached_feedback = cache.get(f"feedback_list_{pk}")
         if not cached_feedback:
-            context["feedback_list"] = (mainapp_models.CourseFeedback.objects.filter(course=context["course_object"]).order_by("-created", "-rating")[:5].select_related())
+            context["feedback_list"] = (
+                mainapp_models.CourseFeedback.objects.filter(course=context["course_object"]).order_by("-created",
+                                                                                                       "-rating")[
+                :5].select_related())
             cache.set(f"feedback_list_{pk}", context["feedback_list"], timeout=300)  # 5 minutes
             import pickle
             with open(f"mainapp/fixtures/006_feedback_list_{pk}.bin", "wb") as outf:
@@ -116,6 +121,7 @@ class CoursesDetailView(TemplateView):
         else:
             context["feedback_list"] = cached_feedback
         return context
+
 
 class CourseFeedbackFormProcessView(LoginRequiredMixin, CreateView):
     model = mainapp_models.CourseFeedback
